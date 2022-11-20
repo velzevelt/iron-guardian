@@ -1,0 +1,85 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://scripts/enemy/panther/panther.gd" type="Script" id=1]
+[ext_resource path="res://sprites/tanks/panther/ww2_top_view_hull1.png" type="Texture" id=2]
+[ext_resource path="res://scripts/enemy/enemy_turret.gd" type="Script" id=3]
+[ext_resource path="res://sprites/tanks/panther/ww2_top_view_turret1.png" type="Texture" id=4]
+[ext_resource path="res://scripts/enemy/enemy_raycast.gd" type="Script" id=5]
+[ext_resource path="res://prefabs/sfx/gunshot_sfx.tscn" type="PackedScene" id=6]
+[ext_resource path="res://sprites/ui/crosshair.png" type="Texture" id=7]
+[ext_resource path="res://prefabs/sfx/engine_sfx.tscn" type="PackedScene" id=8]
+[ext_resource path="res://prefabs/effects/gunshot.tscn" type="PackedScene" id=9]
+[ext_resource path="res://prefabs/enemies/panther/panther_bullet.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scripts/reload_timer.gd" type="Script" id=11]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 40, 21 )
+
+[sub_resource type="CircleShape2D" id=4]
+radius = 62.5345
+
+[node name="Panther" type="KinematicBody2D" groups=["enemy"]]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource( 1 )
+max_health = 3
+fire_rate = 4.0
+bullet = ExtResource( 10 )
+gunshot_fx = ExtResource( 9 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -8, -1 )
+shape = SubResource( 1 )
+
+[node name="Hull" type="Sprite" parent="."]
+rotation = 1.5708
+scale = Vector2( 2, 2 )
+texture = ExtResource( 2 )
+
+[node name="Turret" type="KinematicBody2D" parent="."]
+position = Vector2( 16, -1 )
+collision_layer = 0
+collision_mask = 0
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Turret"]
+position = Vector2( 3, 0 )
+rotation = 1.5708
+scale = Vector2( 1.5, 1.5 )
+texture = ExtResource( 4 )
+
+[node name="BulletPoint" type="Position2D" parent="Turret"]
+position = Vector2( 43.4432, -1.55681 )
+
+[node name="RayCast2D" type="RayCast2D" parent="Turret/BulletPoint"]
+enabled = true
+cast_to = Vector2( 350, 0 )
+script = ExtResource( 5 )
+
+[node name="Neighbours" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+input_pickable = false
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Neighbours"]
+shape = SubResource( 4 )
+
+[node name="ReloadTimer" type="Timer" parent="."]
+wait_time = 3.0
+script = ExtResource( 11 )
+
+[node name="Gunshot" parent="." instance=ExtResource( 6 )]
+
+[node name="Aim" type="Sprite" parent="."]
+visible = false
+modulate = Color( 0.870588, 0, 0, 1 )
+texture = ExtResource( 7 )
+
+[node name="Engine" parent="." instance=ExtResource( 8 )]
+
+[connection signal="target_changed" from="Turret/BulletPoint/RayCast2D" to="Turret" method="_on_RayCast2D_target_changed"]
+[connection signal="target_in_sight" from="Turret/BulletPoint/RayCast2D" to="." method="_on_RayCast2D_target_in_sight"]
+[connection signal="target_out_sight" from="Turret/BulletPoint/RayCast2D" to="." method="_on_RayCast2D_target_out_sight"]
+[connection signal="body_entered" from="Neighbours" to="." method="_on_Neighbours_body_entered"]
+[connection signal="body_exited" from="Neighbours" to="." method="_on_Neighbours_body_exited"]
+[connection signal="timeout" from="ReloadTimer" to="." method="_on_Timer_timeout"]

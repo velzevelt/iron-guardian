@@ -1,0 +1,438 @@
+[gd_scene load_steps=41 format=2]
+
+[ext_resource path="res://sprites/ui/apply_button.png" type="Texture" id=1]
+[ext_resource path="res://fonts/Retro Gaming.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://sprites/entities/star.png" type="Texture" id=3]
+[ext_resource path="res://styles/panel_level_up.tres" type="StyleBox" id=4]
+[ext_resource path="res://scripts/ui/items/add_heart_magnet.tres" type="Resource" id=5]
+[ext_resource path="res://prefabs/ui/item_container.tscn" type="PackedScene" id=6]
+[ext_resource path="res://styles/header.tres" type="StyleBox" id=7]
+[ext_resource path="res://prefabs/ui/bg_panel.tscn" type="PackedScene" id=8]
+[ext_resource path="res://styles/level_up_menu.tres" type="StyleBox" id=9]
+[ext_resource path="res://styles/button_stars.tres" type="StyleBox" id=10]
+[ext_resource path="res://scripts/ui/to_upgrade_list.gd" type="Script" id=11]
+[ext_resource path="res://scripts/ui/items/heal_hq.tres" type="Resource" id=12]
+[ext_resource path="res://scripts/ui/buy_button.gd" type="Script" id=13]
+[ext_resource path="res://scripts/ui/items/increase_max_player_hp.tres" type="Resource" id=14]
+[ext_resource path="res://scripts/ui/items/add_star_magnet.tres" type="Resource" id=15]
+[ext_resource path="res://sounds/sfx/level_up_sfx.wav" type="AudioStream" id=16]
+[ext_resource path="res://sprites/ui/apply_button_pressed.png" type="Texture" id=17]
+[ext_resource path="res://styles/button_stars_pressed.tres" type="StyleBox" id=18]
+[ext_resource path="res://scripts/ui/items/increase_player_speed.tres" type="Resource" id=19]
+[ext_resource path="res://scripts/ui/items/increase_player_rotation.tres" type="Resource" id=20]
+[ext_resource path="res://scripts/ui/items/increase_turret_rotation.tres" type="Resource" id=21]
+[ext_resource path="res://scripts/ui/items/ugrade_shop.tres" type="Resource" id=22]
+[ext_resource path="res://styles/settings_rectangle.tres" type="Theme" id=23]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Panel
+
+onready var tween = $Tween
+
+
+func _on_ApplyButton_pressed():
+	tween.interpolate_property(self, \"rect_scale\", Vector2.ONE, Vector2.ZERO, 1.5, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	tween.start()
+	yield(tween, \"tween_all_completed\")
+	get_tree().paused = false
+	get_parent().queue_free()
+
+
+func _ready() -> void:
+	ItemActions.reset_data()
+	tween.interpolate_property(self, \"rect_scale\", Vector2(0.01, 0.01), Vector2.ONE, 1.5, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	tween.start()
+"
+
+[sub_resource type="DynamicFontData" id=1]
+antialiased = false
+font_path = "res://fonts/Retro Gaming.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 36
+font_data = SubResource( 1 )
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text = tr(\"LEVEL_UP_LABEL\")
+"
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends TextureButton
+
+
+func _on_ApplyButton_pressed() -> void:
+	disabled = true
+"
+
+[sub_resource type="DynamicFont" id=19]
+size = 25
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=17]
+script/source = "extends RichTextLabel
+
+
+func _ready() -> void:
+	Events.connect(\"item_selected\", self, \"_on_item_selected\")
+	Events.connect(\"item_bought\", self, \"_on_item_bought\")
+	Events.connect(\"item_reseted\", self, \"_on_item_reseted\")
+
+func _on_item_selected(data):
+	bbcode_text = data.description
+	$AnimationPlayer.play(\"display_text\")
+
+func _on_item_bought(_s):
+	bbcode_text = \"\"
+
+func _on_item_reseted():
+	bbcode_text = \"\"
+"
+
+[sub_resource type="Animation" id=20]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:percent_visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1.0 ]
+}
+
+[sub_resource type="Animation" id=21]
+resource_name = "display_text"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:percent_visible")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+
+[sub_resource type="StyleBoxFlat" id=12]
+bg_color = Color( 0.376471, 0.0313726, 0.176471, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.694118, 0.694118, 0.694118, 1 )
+
+[sub_resource type="DynamicFont" id=13]
+size = 20
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=18]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text = str(Globals.player.star_count)
+	Events.connect(\"item_bought\", self, \"_on_item_bought\")
+
+func _on_item_bought(_s):
+	text = str(Globals.player.star_count)
+"
+
+[sub_resource type="StyleBoxFlat" id=15]
+bg_color = Color( 0.639216, 0.0666667, 0.160784, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.694118, 0.694118, 0.694118, 1 )
+
+[sub_resource type="GDScript" id=16]
+script/source = "extends Label
+
+onready var anim = $AnimationPlayer
+
+func _ready() -> void:
+	Events.connect(\"item_selected\", self, \"_on_item_selected\")
+	Events.connect(\"purchase_failed\", self, \"_on_purchase_failed\")
+
+
+func _on_purchase_failed():
+	anim.play(\"shake\")
+
+
+func _on_item_selected(data):
+	text = str(data.price)
+
+"
+
+[sub_resource type="Animation" id=23]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=22]
+resource_name = "shake"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
+}
+
+[sub_resource type="DynamicFont" id=14]
+size = 26
+font_data = ExtResource( 2 )
+
+[node name="LevelUpMenu" type="CanvasLayer"]
+layer = 2
+
+[node name="BGPanel" parent="." instance=ExtResource( 8 )]
+
+[node name="LevelUpPanel" type="Panel" parent="."]
+pause_mode = 2
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -347.0
+margin_top = -210.0
+margin_right = 347.0
+margin_bottom = 210.0
+rect_pivot_offset = Vector2( 347, 210 )
+input_pass_on_modal_close_click = false
+custom_styles/panel = ExtResource( 9 )
+script = SubResource( 3 )
+
+[node name="Header" type="Panel" parent="LevelUpPanel"]
+anchor_right = 1.0
+margin_bottom = 52.0
+custom_styles/panel = ExtResource( 7 )
+
+[node name="Label" type="Label" parent="LevelUpPanel/Header"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 5.0
+custom_colors/font_color = Color( 0.972549, 0.615686, 0.180392, 1 )
+custom_fonts/font = SubResource( 2 )
+text = "level up"
+align = 1
+valign = 1
+uppercase = true
+script = SubResource( 8 )
+
+[node name="ApplyButton" type="TextureButton" parent="LevelUpPanel"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -116.0
+margin_top = -122.0
+margin_right = -14.0
+margin_bottom = -23.0
+texture_normal = ExtResource( 1 )
+texture_pressed = ExtResource( 17 )
+texture_hover = ExtResource( 17 )
+expand = true
+stretch_mode = 5
+script = SubResource( 10 )
+
+[node name="Tween" type="Tween" parent="LevelUpPanel/ApplyButton"]
+
+[node name="ToUpgrade" type="Panel" parent="LevelUpPanel"]
+anchor_left = 0.0273775
+anchor_top = 0.17619
+anchor_right = 0.815562
+anchor_bottom = 0.657143
+custom_styles/panel = ExtResource( 4 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LevelUpPanel/ToUpgrade"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = -5.0
+
+[node name="ToUgradeList" type="GridContainer" parent="LevelUpPanel/ToUpgrade/ScrollContainer"]
+margin_right = 537.0
+margin_bottom = 192.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 23 )
+columns = 2
+script = ExtResource( 11 )
+item_node = ExtResource( 6 )
+items_data = [ ExtResource( 12 ), ExtResource( 15 ), ExtResource( 14 ), ExtResource( 5 ), ExtResource( 19 ), ExtResource( 21 ), ExtResource( 20 ), ExtResource( 22 ) ]
+
+[node name="DescriptionPanel" type="Panel" parent="LevelUpPanel"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 19.0
+margin_top = -122.0
+margin_right = -128.0
+margin_bottom = -23.0
+theme = ExtResource( 23 )
+custom_styles/panel = ExtResource( 4 )
+
+[node name="DescriptionLabel" type="RichTextLabel" parent="LevelUpPanel/DescriptionPanel"]
+anchor_left = 0.00731261
+anchor_top = 0.0606061
+anchor_right = 0.990859
+anchor_bottom = 0.929293
+theme = ExtResource( 23 )
+custom_fonts/normal_font = SubResource( 19 )
+bbcode_enabled = true
+script = SubResource( 17 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelUpPanel/DescriptionPanel/DescriptionLabel"]
+anims/RESET = SubResource( 20 )
+anims/display_text = SubResource( 21 )
+
+[node name="PlayerStars" type="Panel" parent="LevelUpPanel"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -116.0
+margin_top = -136.0
+margin_right = -14.0
+margin_bottom = -88.0
+custom_styles/panel = SubResource( 12 )
+
+[node name="Star" type="TextureRect" parent="LevelUpPanel/PlayerStars"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 9.0
+margin_top = -22.0
+margin_right = 47.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 6
+
+[node name="StarLabel" type="Label" parent="LevelUpPanel/PlayerStars"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -55.0
+margin_top = -18.0
+margin_right = -5.0
+margin_bottom = 18.0
+custom_fonts/font = SubResource( 13 )
+text = "9999"
+align = 1
+valign = 1
+autowrap = true
+clip_text = true
+uppercase = true
+script = SubResource( 18 )
+
+[node name="PriceStars" type="Panel" parent="LevelUpPanel"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -116.0
+margin_top = -76.0
+margin_right = -14.0
+margin_bottom = -28.0
+custom_styles/panel = SubResource( 15 )
+
+[node name="Star" type="TextureRect" parent="LevelUpPanel/PriceStars"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 9.0
+margin_top = -22.0
+margin_right = 47.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 6
+
+[node name="StarLabel" type="Label" parent="LevelUpPanel/PriceStars"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -55.0
+margin_top = -18.0
+margin_right = -5.0
+margin_bottom = 18.0
+rect_pivot_offset = Vector2( 25, 18 )
+custom_fonts/font = SubResource( 13 )
+text = "0"
+align = 1
+valign = 1
+autowrap = true
+clip_text = true
+uppercase = true
+script = SubResource( 16 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="LevelUpPanel/PriceStars/StarLabel"]
+anims/RESET = SubResource( 23 )
+anims/shake = SubResource( 22 )
+
+[node name="BuyButton" type="Button" parent="LevelUpPanel"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -116.0
+margin_top = -12.0
+margin_right = -14.0
+margin_bottom = 66.0
+custom_fonts/font = SubResource( 14 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/normal = ExtResource( 10 )
+text = "BUY"
+clip_text = true
+script = ExtResource( 13 )
+
+[node name="Tween" type="Tween" parent="LevelUpPanel"]
+
+[node name="LevelUpSfx" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = ExtResource( 16 )
+volume_db = -15.0
+autoplay = true
+bus = "SFX"
+
+[connection signal="pressed" from="LevelUpPanel/ApplyButton" to="LevelUpPanel" method="_on_ApplyButton_pressed"]
+[connection signal="pressed" from="LevelUpPanel/ApplyButton" to="LevelUpPanel/ApplyButton" method="_on_ApplyButton_pressed"]
+[connection signal="pressed" from="LevelUpPanel/BuyButton" to="LevelUpPanel/BuyButton" method="_on_BuyButton_pressed"]

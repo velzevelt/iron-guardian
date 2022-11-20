@@ -1,0 +1,44 @@
+KEYS,en,ru
+PLAY_BUTTON,Play,Играть
+SETTINGS_BUTTON,Settings,Настройки
+EXIT_BUTTON,Exit,Выход
+CLOSE_SETTINGS_BUTTON,Apply,Принять
+SFX_VOLUME,Effects volume,Эффекты
+MUSIC_VOLUME,Music volume,Музыка
+LEVEL_LABEL,Level ,Уровень 
+GAME_OVER_LABEL,Game over,Итоги
+LANGUAGE_BUTTON,Language,Язык
+SCORE_LABEL,Score ,Очки 
+LEVEL_UP_LABEL,New level!,Новый уровень!
+MUTE_ENGINES_LABEL,Mute engines,Заглушить двигатели
+,,
+ITEM_NAME_HEAL_HQ,Heal hq,Лечение
+ITEM_DESCRIPTION_HEAL_HQ,Heal the [color=green]headquarters[/color] by [color=yellow]%s,Восполняет здоровье [color=green]штаба[/color] на [color=yellow]%s
+,,
+,,
+ITEM_NAME_UPGRADE_HEALTH,Health,Здоровье
+ITEM_DESCRIPTION_UPGRADE_HEALTH,Increase maximum health by [color=yellow]%s,Увеличивает максимум здоровья на [color=yellow]%s
+,,
+,,
+ITEM_NAME_STAR_MAGNET,Magnet,Магнит
+ITEM_DESCRIPTION_STAR_MAGNET,Сollects  [color=yellow]stars[/color] from a distance,Собирает [color=yellow]звезды[/color] с расстояния
+,,
+,,
+ITEM_NAME_HEART_MAGNET,Magnet,Магнит
+ITEM_DESCRIPTION_HEART_MAGNET,Сollects  [color=red]hearts[/color] from a distance,Собирает [color=red]сердца[/color] с расстояния
+,,
+,,
+ITEM_NAME_SPEED_UPGRADE,Speed,Скорость
+ITEM_DESCRIPTION_SPEED_UPGRADE,Increase speed by [color=yellow]%s,Увеличивает скорость на [color=yellow]%s
+,,
+,,
+ITEM_NAME_TURRET_UPGRADE,Turret,Башня
+ITEM_DESCRIPTION_TURRET_UPGRADE,Increase turret speed by [color=yellow]%s,Увеличивает скорость башни на [color=yellow]%s
+,,
+,,
+ITEM_NAME_ROTATION_UPGRADE,Rotation,Вращение
+ITEM_DESCRIPTION_ROTATION_UPGRADE,Increase rotation speed by [color=yellow]%s,Увеличивает скорость вращения на [color=yellow]%s
+,,
+,,
+ITEM_NAME_SHOP_UPGRADE,Slot,Слот
+ITEM_DESCRIPTION_SHOP_UPGRADE,Increase available shop items by [color=yellow]1,Увеличивает количество доступных в магазине предметов на [color=yellow]1

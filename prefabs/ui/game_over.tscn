@@ -1,0 +1,146 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://sprites/ui/restart_button.png" type="Texture" id=1]
+[ext_resource path="res://sprites/ui/go_home_button.png" type="Texture" id=2]
+[ext_resource path="res://sounds/sfx/sound_gameover_sfx.wav" type="AudioStream" id=3]
+[ext_resource path="res://styles/level_up_menu.tres" type="StyleBox" id=4]
+[ext_resource path="res://styles/header.tres" type="StyleBox" id=5]
+[ext_resource path="res://prefabs/ui/bg_panel.tscn" type="PackedScene" id=6]
+[ext_resource path="res://prefabs/ui/exit_button.gd" type="Script" id=7]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Panel
+
+
+func _ready() -> void:
+	var tween = $Tween
+	tween.interpolate_property(self, \"rect_scale\", Vector2(0.01, 0.01), Vector2.ONE, 1.5, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	tween.start()
+"
+
+[sub_resource type="DynamicFontData" id=1]
+antialiased = false
+font_path = "res://fonts/Retro Gaming.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 36
+font_data = SubResource( 1 )
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text = tr(\"GAME_OVER_LABEL\")
+"
+
+[sub_resource type="DynamicFont" id=6]
+size = 30
+font_data = SubResource( 1 )
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends Label
+
+
+func _ready():
+	text = tr(\"SCORE_LABEL\") + str(Statistics.score)
+
+"
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends TextureButton
+
+func _on_RestartButton_pressed():
+	Events.emit_signal(\"scene_changed\")
+	get_tree().reload_current_scene()
+	get_tree().paused = false  
+	get_parent().queue_free()
+"
+
+[node name="GameOver" type="CanvasLayer"]
+
+[node name="BGPanel" parent="." instance=ExtResource( 6 )]
+
+[node name="GameOverPanel" type="Panel" parent="."]
+pause_mode = 2
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -258.0
+margin_top = -149.0
+margin_right = 258.0
+margin_bottom = 149.0
+rect_pivot_offset = Vector2( 258, 149 )
+custom_styles/panel = ExtResource( 4 )
+script = SubResource( 3 )
+
+[node name="Header" type="Panel" parent="GameOverPanel"]
+anchor_right = 1.0
+margin_bottom = 52.0
+custom_styles/panel = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="GameOverPanel/Header"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 3.0
+custom_colors/font_color = Color( 0.752941, 0.223529, 0.168627, 1 )
+custom_fonts/font = SubResource( 2 )
+text = "GAME OVER"
+align = 1
+valign = 1
+uppercase = true
+script = SubResource( 8 )
+
+[node name="Score" type="Label" parent="GameOverPanel"]
+anchor_left = 0.5
+anchor_top = 0.372
+anchor_right = 0.5
+anchor_bottom = 0.372
+margin_left = -82.0
+margin_top = -22.856
+margin_right = 82.0
+margin_bottom = 23.144
+custom_fonts/font = SubResource( 6 )
+text = "Score 12"
+align = 1
+valign = 1
+uppercase = true
+script = SubResource( 7 )
+
+[node name="RestartButton" type="TextureButton" parent="GameOverPanel"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -122.0
+margin_top = -122.0
+margin_right = -20.0
+margin_bottom = -23.0
+texture_normal = ExtResource( 1 )
+expand = true
+stretch_mode = 5
+script = SubResource( 9 )
+
+[node name="ExitButton" type="TextureButton" parent="GameOverPanel"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 27.0
+margin_top = -122.0
+margin_right = 102.0
+margin_bottom = -23.0
+texture_normal = ExtResource( 2 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 7 )
+
+[node name="Tween" type="Tween" parent="GameOverPanel"]
+
+[node name="GameOverSfx" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = ExtResource( 3 )
+volume_db = -15.0
+autoplay = true
+
+[connection signal="pressed" from="GameOverPanel/RestartButton" to="GameOverPanel/RestartButton" method="_on_RestartButton_pressed"]
+[connection signal="pressed" from="GameOverPanel/ExitButton" to="GameOverPanel/ExitButton" method="_on_ExitButton_pressed"]

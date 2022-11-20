@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://sprites/ui/experiencebar_progress.png" type="Texture" id=2]
+[ext_resource path="res://sprites/ui/experiencebar_base.png" type="Texture" id=3]
+[ext_resource path="res://scripts/ui/experience_bar.gd" type="Script" id=4]
+
+[node name="LevelProgress" type="TextureProgress"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -103.0
+margin_top = 117.0
+margin_right = -1.0
+margin_bottom = 219.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 2 )
+fill_mode = 3
+radial_initial_angle = 180.0
+nine_patch_stretch = true
+script = ExtResource( 4 )

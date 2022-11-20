@@ -1,0 +1,30 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://scripts/entities/explosion.gd" type="Script" id=1]
+[ext_resource path="res://sprites/effects/explosion/explosion1.png" type="Texture" id=2]
+[ext_resource path="res://sprites/effects/explosion/explosion2.png" type="Texture" id=3]
+[ext_resource path="res://sprites/effects/explosion/explosion4.png" type="Texture" id=4]
+[ext_resource path="res://sprites/effects/explosion/explosion5.png" type="Texture" id=5]
+[ext_resource path="res://sprites/effects/explosion/explosion3.png" type="Texture" id=6]
+[ext_resource path="res://sounds/sfx/explosion_sfx.wav" type="AudioStream" id=8]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 6 ), ExtResource( 4 ), ExtResource( 5 ) ],
+"loop": true,
+"name": "default",
+"speed": 11.0
+} ]
+
+[node name="Explosion" type="AnimatedSprite"]
+frames = SubResource( 1 )
+frame = 1
+playing = true
+script = ExtResource( 1 )
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 8 )
+autoplay = true
+bus = "SFX"
+
+[connection signal="animation_finished" from="." to="." method="_on_Explosion_animation_finished"]

@@ -1,0 +1,281 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://sounds/sfx/explosion_sfx.wav" type="AudioStream" id=1]
+[ext_resource path="res://styles/settings_rounded.tres" type="Theme" id=4]
+
+[sub_resource type="GDScript" id=16]
+script/source = "extends CheckBox
+
+
+func _ready() -> void:
+	text = tr(\"MUTE_ENGINES_LABEL\")
+	pressed = AudioServer.is_bus_mute(AudioServer.get_bus_index(\"Engine\"))
+	
+	Language.connect(\"language_changed\", self, \"_on_language_changed\")
+
+
+func _on_MuteEngines_toggled(button_pressed: bool) -> void:
+	AudioServer.set_bus_mute(AudioServer.get_bus_index(\"Engine\"), button_pressed)
+
+func _on_language_changed() -> void:
+	text = tr(\"MUTE_ENGINES_LABEL\")
+"
+
+[sub_resource type="GDScript" id=15]
+script/source = "extends OptionButton
+
+
+func _ready() -> void:
+	text = tr(\"LANGUAGE_BUTTON\")
+	
+	add_separator()
+	add_item(\"English\")
+	add_item(\"Русский\")
+	add_separator()
+
+
+func _on_LanguageButton_item_selected(index: int) -> void:
+	var locale = get_item_text(index)
+	match locale:
+		\"English\":
+			Language.change_locale(\"en\")
+		\"Русский\":
+			Language.change_locale(\"ru\")
+
+"
+
+[sub_resource type="DynamicFontData" id=5]
+antialiased = false
+font_path = "res://fonts/Retro Gaming.ttf"
+
+[sub_resource type="DynamicFont" id=6]
+size = 24
+font_data = SubResource( 5 )
+
+[sub_resource type="GDScript" id=13]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text = tr(\"MUSIC_VOLUME\")
+	Language.connect(\"language_changed\", self, \"on_language_changed\")
+
+func on_language_changed():
+	text = tr(\"MUSIC_VOLUME\")
+"
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends HSlider
+
+
+func _ready() -> void:
+	value = AudioServer.get_bus_volume_db(AudioServer.get_bus_index(\"Music\"))
+
+
+
+func _on_HSlider_value_changed(value):
+	GlobalsSettings.set_music_volume(value)
+"
+
+[sub_resource type="DynamicFont" id=7]
+size = 24
+font_data = SubResource( 5 )
+
+[sub_resource type="GDScript" id=12]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text = tr(\"SFX_VOLUME\")
+	Language.connect(\"language_changed\", self, \"on_language_changed\")
+
+func on_language_changed():
+	text = tr(\"SFX_VOLUME\")
+"
+
+[sub_resource type="GDScript" id=11]
+script/source = "extends HSlider
+
+onready var test_sfx = $TestSfx as AudioStreamPlayer
+
+
+func _ready() -> void:
+	value = AudioServer.get_bus_volume_db(AudioServer.get_bus_index(\"SFX\"))
+
+
+func _on_HSlider2_value_changed(value):
+	GlobalsSettings.set_sfx_volume(value)
+	test_play()
+
+
+func test_play():
+	if not test_sfx.playing:
+		test_sfx.play()
+"
+
+[sub_resource type="DynamicFont" id=8]
+size = 26
+font_data = SubResource( 5 )
+
+[sub_resource type="GDScript" id=9]
+script/source = "extends Button
+
+var m = load(\"res://prefabs/ui/menu/menu_buttons.tscn\")
+
+
+
+func _on_CloseSettings_pressed():
+	var i = m.instance()
+	get_parent().get_parent().add_child(i)
+	yield(get_tree(), \"idle_frame\")
+	yield(get_tree(), \"idle_frame\")
+	get_parent().queue_free()
+
+
+func _ready() -> void:
+	text = tr(\"CLOSE_SETTINGS_BUTTON\")
+	Language.connect(\"language_changed\", self, \"_on_language_changed\")
+
+func _on_language_changed():
+	text = tr(\"CLOSE_SETTINGS_BUTTON\")
+"
+
+[node name="Settings" type="VBoxContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -285.0
+margin_top = -148.0
+margin_right = 286.0
+margin_bottom = 192.0
+custom_constants/separation = 40
+
+[node name="Top" type="HBoxContainer" parent="."]
+margin_right = 571.0
+margin_bottom = 21.0
+
+[node name="MuteEngines" type="CheckBox" parent="Top"]
+margin_right = 283.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.25
+theme = ExtResource( 4 )
+text = "Engine sounds"
+flat = true
+align = 1
+script = SubResource( 16 )
+
+[node name="LanguageButton" type="OptionButton" parent="Top"]
+margin_left = 287.0
+margin_right = 571.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.25
+theme = ExtResource( 4 )
+text = "language"
+flat = true
+clip_text = true
+align = 1
+script = SubResource( 15 )
+
+[node name="Music" type="VBoxContainer" parent="."]
+margin_top = 61.0
+margin_right = 571.0
+margin_bottom = 110.0
+size_flags_vertical = 3
+
+[node name="Panel" type="Control" parent="Music"]
+margin_right = 571.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Music/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Music/Panel/VBoxContainer"]
+margin_right = 571.0
+margin_bottom = 31.0
+custom_fonts/font = SubResource( 6 )
+text = "Music Volume"
+valign = 2
+script = SubResource( 13 )
+
+[node name="HSlider" type="HSlider" parent="Music/Panel/VBoxContainer"]
+margin_top = 35.0
+margin_right = 571.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource( 4 )
+min_value = -80.0
+max_value = 3.0
+value = -20.0
+scrollable = false
+script = SubResource( 10 )
+
+[node name="Effects" type="VBoxContainer" parent="."]
+margin_top = 150.0
+margin_right = 571.0
+margin_bottom = 200.0
+size_flags_vertical = 3
+
+[node name="Panel" type="Control" parent="Effects"]
+margin_right = 571.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Effects/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label2" type="Label" parent="Effects/Panel/VBoxContainer"]
+margin_right = 571.0
+margin_bottom = 31.0
+custom_fonts/font = SubResource( 7 )
+text = "Effects Volume"
+valign = 1
+script = SubResource( 12 )
+
+[node name="HSlider2" type="HSlider" parent="Effects/Panel/VBoxContainer"]
+margin_top = 35.0
+margin_right = 571.0
+margin_bottom = 48.0
+size_flags_horizontal = 3
+theme = ExtResource( 4 )
+min_value = -80.0
+max_value = 1.0
+value = -10.0
+scrollable = false
+script = SubResource( 11 )
+
+[node name="TestSfx" type="AudioStreamPlayer" parent="Effects/Panel/VBoxContainer/HSlider2"]
+stream = ExtResource( 1 )
+bus = "SFX"
+
+[node name="CloseSettings" type="Button" parent="."]
+margin_top = 240.0
+margin_right = 571.0
+margin_bottom = 340.0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+theme = ExtResource( 4 )
+custom_fonts/font = SubResource( 8 )
+text = "Apply"
+flat = true
+script = SubResource( 9 )
+
+[connection signal="toggled" from="Top/MuteEngines" to="Top/MuteEngines" method="_on_MuteEngines_toggled"]
+[connection signal="item_selected" from="Top/LanguageButton" to="Top/LanguageButton" method="_on_LanguageButton_item_selected"]
+[connection signal="value_changed" from="Music/Panel/VBoxContainer/HSlider" to="Music/Panel/VBoxContainer/HSlider" method="_on_HSlider_value_changed"]
+[connection signal="value_changed" from="Effects/Panel/VBoxContainer/HSlider2" to="Effects/Panel/VBoxContainer/HSlider2" method="_on_HSlider2_value_changed"]
+[connection signal="pressed" from="CloseSettings" to="CloseSettings" method="_on_CloseSettings_pressed"]

@@ -1,0 +1,78 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://scripts/player/player.gd" type="Script" id=1]
+[ext_resource path="res://sprites/tanks/t_34/ww2_top_view_hull4.png" type="Texture" id=2]
+[ext_resource path="res://scripts/player/turret.gd" type="Script" id=3]
+[ext_resource path="res://sprites/tanks/t_34/ww2_top_view_turret4.png" type="Texture" id=4]
+[ext_resource path="res://prefabs/player/camera.tscn" type="PackedScene" id=5]
+[ext_resource path="res://prefabs/sfx/gunshot_sfx.tscn" type="PackedScene" id=6]
+[ext_resource path="res://prefabs/player/bullet.tscn" type="PackedScene" id=7]
+[ext_resource path="res://prefabs/effects/gunshot.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scripts/reload_timer.gd" type="Script" id=9]
+[ext_resource path="res://scripts/player/modificators.gd" type="Script" id=11]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 40, 22 )
+
+[sub_resource type="CircleShape2D" id=6]
+radius = 273.227
+
+[node name="Player" type="KinematicBody2D" groups=["ai_targets"]]
+collision_mask = 0
+script = ExtResource( 1 )
+speed = 500
+rotation_speed = 0.1
+fire_rate = 1.5
+turret_speed = 2.0
+bullet = ExtResource( 7 )
+gunshot_fx = ExtResource( 8 )
+
+[node name="HitCollision" type="CollisionShape2D" parent="."]
+position = Vector2( -6, 2 )
+shape = SubResource( 1 )
+
+[node name="Camera2D" parent="." instance=ExtResource( 5 )]
+limit_left = -1920
+limit_top = -1080
+limit_right = 1920
+limit_bottom = 1080
+
+[node name="Hull" type="Sprite" parent="."]
+rotation = 1.5708
+scale = Vector2( 2, 2 )
+texture = ExtResource( 2 )
+
+[node name="Turret" type="KinematicBody2D" parent="."]
+position = Vector2( 12, 0 )
+collision_layer = 0
+collision_mask = 0
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Turret"]
+rotation = 1.5708
+scale = Vector2( 2, 2 )
+texture = ExtResource( 4 )
+
+[node name="BulletPoint" type="Position2D" parent="Turret"]
+position = Vector2( 40, 3 )
+
+[node name="Gunshot" parent="." instance=ExtResource( 6 )]
+
+[node name="ReloadTimer" type="Timer" parent="."]
+wait_time = 2.0
+script = ExtResource( 9 )
+
+[node name="TargetCapture" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 3
+
+[node name="TargetCaptureShape" type="CollisionShape2D" parent="TargetCapture"]
+shape = SubResource( 6 )
+
+[node name="Modificators" type="Node2D" parent="."]
+script = ExtResource( 11 )
+
+[connection signal="timeout" from="ReloadTimer" to="." method="_on_Timer_timeout"]
+[connection signal="body_entered" from="TargetCapture" to="Turret" method="_on_TargetCapture_body_entered"]
+[connection signal="body_exited" from="TargetCapture" to="Turret" method="_on_TargetCapture_body_exited"]
